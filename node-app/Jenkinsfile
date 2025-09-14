@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/prudhviraj310/node-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'docker build -t node-app:latest .'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            environment {
+                SONARQUBE = credentials('sonar-token')
+            }
+            steps {
+                withSonarQubeEnv('MySonarQube') {
+                    sh "sonar-scanner -Dsonar.projectKey=node-app -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=$SONARQUBE"
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh 'docker run -d -p 3000:3000 --name node-app node-app:latest'
+            }
+        }
+    }
+}
