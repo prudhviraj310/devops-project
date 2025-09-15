@@ -1,14 +1,17 @@
-version: "3.8"
-
 services:
   jenkins:
     image: jenkins/jenkins:lts
     container_name: jenkins
+    user: root # 👈 run Jenkins as root so it can access Docker socket
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
-      - jenkins_home:/var/jenkins_home
+      - ./jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock # 👈 Jenkins will use host Docker
+      - /usr/bin/docker:/usr/bin/docker # 👈 mount Docker CLI binary
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
 
   sonarqube:
     image: sonarqube:latest
