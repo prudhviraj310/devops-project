@@ -6,7 +6,7 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'githubtoken',
-                    url: 'https://github.com/prudhviraj310/node-app.git'
+                    url: 'https://github.com/prudhviraj310/devops-project.git'
             }
         }
 
